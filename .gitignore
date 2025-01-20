@@ -1,0 +1,6 @@
+.idea/
+.venv/
+trash/
+/test_main.http
+__pycache__
+.DS_Store
