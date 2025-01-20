@@ -68,6 +68,7 @@ class Yara(FileProcessor):
         processor_result = AnalyzerResult[YaraResult](
             processor_type=Yara.processor_type,
             processor_name=Yara.processor_name,
+            processor_url=Yara.processor_url,
             processor_description=Yara.processor_description,
         )
 

@@ -83,6 +83,7 @@ class Tika(FileProcessor):
     def _invoke_tika(self) -> Analysis[TikaResult]:
         processor_result = AnalyzerResult[TikaResult](
             processor_name=Tika.processor_name,
+            processor_url=Tika.processor_url,
             processor_description=Tika.processor_description
         )
         ingestion_result = Analysis[TikaResult](

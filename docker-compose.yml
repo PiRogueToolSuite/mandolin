@@ -8,9 +8,10 @@ services:
       timeout: 20s
       retries: 3
   mandolin:
-#    image: ghcr.io/piroguetoolsuite/mandolin:latest
-    image: mandolin:latest
+    image: ghcr.io/piroguetoolsuite/mandolin:main
     restart: unless-stopped
+    ports:
+      - "0.0.0.0:8888:8000"
     depends_on:
       tika:
         condition: service_healthy

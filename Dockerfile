@@ -13,10 +13,7 @@ RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-instal
 RUN addgroup --system mandolin \
     && adduser --system --ingroup mandolin mandolin
 
-# Copy Mandolin code
 COPY --chown=mandolin:mandolin ./requirements.txt /code/requirements.txt
-COPY --chown=mandolin:mandolin ./app /code/app
-COPY --chown=mandolin:mandolin ./mandolin /code/mandolin
 
 # Install Python packages
 RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
@@ -26,6 +23,9 @@ RUN apt-get purge -y automake libtool make gcc pkg-config
 RUN apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false
 RUN rm -rf /var/lib/apt/lists/*
 
+# Copy Mandolin code
+COPY --chown=mandolin:mandolin ./app /code/app
+COPY --chown=mandolin:mandolin ./mandolin /code/mandolin
 RUN chown mandolin:mandolin /code
 
 USER mandolin
