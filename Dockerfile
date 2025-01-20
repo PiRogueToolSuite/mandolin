@@ -29,5 +29,5 @@ RUN rm -rf /var/lib/apt/lists/*
 RUN chown mandolin:mandolin /code
 
 USER mandolin
-EXPOSE 80/tcp
-CMD ["fastapi", "run", "app/main.py", "--port", "80", "--workers", "4"]
+EXPOSE 8000/tcp
+CMD ["fastapi", "run", "app/main.py", "--port", "8000", "--workers", "4"]

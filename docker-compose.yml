@@ -1,0 +1,19 @@
+services:
+  tika:
+    image: apache/tika:3.0.0.0-full
+    restart: unless-stopped
+    healthcheck:
+      test: [ "CMD", "wget", "-O", "/dev/null", "http://localhost:9998/tika" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+  mandolin:
+#    image: ghcr.io/piroguetoolsuite/mandolin:latest
+    image: mandolin:latest
+    restart: unless-stopped
+    depends_on:
+      tika:
+        condition: service_healthy
+    environment:
+      - TIKA_URL=http://tika:9998/
+      - MAX_FILE_SIZE=250000000  # 250MB
