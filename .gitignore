@@ -4,3 +4,4 @@ trash/
 /test_main.http
 __pycache__
 .DS_Store
+/node_modules/

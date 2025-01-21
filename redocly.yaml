@@ -1,0 +1,13 @@
+extends:
+  - recommended
+
+apis:
+  mandolin@v1:
+    root: ./openapi.json
+    theme:
+      openapi:
+        hideLogo: true
+
+theme:
+  openapi:
+    schemaExpansionLevel: 2
