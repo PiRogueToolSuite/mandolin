@@ -21,6 +21,8 @@ jobs:
     name: Generate OpenAPI schema
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Run the server in background
         uses: ./.github/actions/run-server
       - name: Generate OpenAPI document
@@ -31,6 +33,8 @@ jobs:
     needs: generate-openapi-schema
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
       - name: Run server in background
         run: fastapi run app/main.py --port 8000 &
       - uses: schemathesis/action@v1
