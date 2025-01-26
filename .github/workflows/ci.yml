@@ -44,6 +44,8 @@ jobs:
     needs: generate-openapi-schema
     runs-on: ubuntu-latest
     steps:
+      - name: Run server in background
+        run: fastapi run app/main.py --port 8000 &
       - uses: schemathesis/action@v1
         with:
           schema: 'http://127.0.0.1:8000/openapi.json'
