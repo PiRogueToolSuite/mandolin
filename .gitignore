@@ -1,7 +1,10 @@
 .idea/
 .venv/
+.hypothesis/
+openapi.json
 trash/
 /test_main.http
 __pycache__
 .DS_Store
+report.tar.gz
 /node_modules/

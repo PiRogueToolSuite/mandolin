@@ -1,0 +1,20 @@
+{
+  "$schema": "./node_modules/@openapitools/openapi-generator-cli/config.schema.json",
+  "spaces": 2,
+  "generator-cli": {
+    "version": "7.11.0",
+    "generators": {
+      "v1.0": {
+        "generatorName": "python",
+        "inputSpec": "openapi.json",
+        "output": "../mandolin-python-client/",
+        "packageName": "mandolin_python_client",
+        "gitUserId": "PiRogueToolSuite",
+        "gitRepoId": "mandolin-python-client",
+        "templateDir": "./templates",
+        "additionalProperties": {
+        }
+      }
+    }
+  }
+}
