@@ -21,21 +21,8 @@ jobs:
     name: Generate OpenAPI schema
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Set up Python 3.13
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.13'
-          cache: 'pip'
-      - name: Install Python dependencies
-        run: pip install -r dev-requirements.txt
-      - name: Setup Node
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-      - name: Run server in background
-        run: fastapi run app/main.py --port 8000 &
+      - name: Run the server in background
+        uses: ./.github/actions/run-server
       - name: Generate OpenAPI document
         run: curl -f http://localhost:8000/openapi.json -o openapi.json
 

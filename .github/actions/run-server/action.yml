@@ -1,0 +1,18 @@
+name: 'Run FastAPI server in background'
+description: 'Reusable action to run the FastAPI server in background on port 8000.'
+runs:
+  using: "composite"
+  steps:
+  - name: Checkout repository
+    uses: actions/checkout@v4
+  - name: Set up Python 3.13
+    uses: actions/setup-python@v5
+    with:
+      python-version: '3.13'
+      cache: 'pip'
+  - name: Install Python dependencies
+    shell: bash
+    run: pip install -r dev-requirements.txt
+  - name: Run server in background
+    shell: bash
+    run: fastapi run app/main.py --port 8000 &
