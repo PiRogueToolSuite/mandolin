@@ -14,3 +14,6 @@ runs:
   - name: Run server in background
     shell: bash
     run: fastapi run app/main.py --port 8000 &
+  - name: Generate OpenAPI document
+    shell: bash
+    run: curl -f http://localhost:8000/openapi.json -o openapi.json

@@ -17,20 +17,8 @@ on:
     types: [ created ]
 
 jobs:
-  generate-openapi-schema:
-    name: Generate OpenAPI schema
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Run the server in background
-        uses: ./.github/actions/run-server
-      - name: Generate OpenAPI document
-        run: curl -f http://localhost:8000/openapi.json -o openapi.json
-
   api-tests:
     name: Test the API with Schemathesis
-    needs: generate-openapi-schema
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -45,7 +33,7 @@ jobs:
 
   generate-openapi-doc:
     name: Generate OpenAPI documentation
-    needs: [generate-openapi-schema, api-tests]
+    needs: api-tests
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -53,15 +41,20 @@ jobs:
       id-token: write
       security-events: write
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run the server in background
+        uses: ./.github/actions/run-server
       - name: Generate Redoc static documentation
         run: npx -y @redocly/cli build-docs openapi.json --output=doc/index.html
       - name: Upload API documentation
+        if: startsWith(github.ref, 'refs/tags/') && github.repository_owner == 'PiRogueToolSuite'
         uses: actions/upload-pages-artifact@v3
         with:
           path: ./doc
 
   deploy-api-doc:
-    name: Deploy the API documentation on GitHub Pages
+    name: Publish documentation on GitHub Pages
     if: startsWith(github.ref, 'refs/tags/') && github.repository_owner == 'PiRogueToolSuite'
     needs: generate-openapi-doc
     permissions:
@@ -77,6 +70,7 @@ jobs:
         uses: actions/deploy-pages@v4
 
   docker-build:
+    name: Build and publish the docker image
     if: startsWith(github.ref, 'refs/tags/') && github.repository_owner == 'PiRogueToolSuite'
     needs: api-tests
     runs-on: ubuntu-latest
