@@ -8,7 +8,7 @@ WORKDIR /code
 
 # Install the packages needed to build Yara
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
-  automake libtool make gcc pkg-config libmagic1
+  automake libtool make gcc pkg-config libmagic1 wget
 
 RUN addgroup --system mandolin \
     && adduser --system --ingroup mandolin mandolin

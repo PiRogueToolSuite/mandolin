@@ -15,6 +15,11 @@ services:
     depends_on:
       tika:
         condition: service_healthy
+    healthcheck:
+      test: [ "CMD", "wget", "-O", "/dev/null", "http://localhost:8000/" ]
+      interval: 30s
+      timeout: 20s
+      retries: 3
     environment:
       - TIKA_URL=http://tika:9998/
       - MAX_FILE_SIZE=250000000  # 250MB
