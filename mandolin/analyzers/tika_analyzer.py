@@ -96,7 +96,7 @@ class Tika(FileProcessor):
             extra_headers['X-Tika-OCRskipOcr'] = 'true'
         with NamedTemporaryFile("wb", suffix=self._file.filename) as tmp:
             tmp.write(self._file.file.read())
-            with TikaClient(tika_url=Tika.tika_url, compress=True) as client:
+            with TikaClient(tika_url=Tika.tika_url, compress=True, timeout=2*60) as client:
                 client.add_headers(extra_headers)
                 data: TikaResponse = client.tika.as_text.from_file(
                     Path(tmp.name),
