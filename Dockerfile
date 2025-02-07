@@ -30,4 +30,4 @@ RUN chown mandolin:mandolin /code
 
 USER mandolin
 EXPOSE 8000/tcp
-CMD ["fastapi", "run", "app/main.py", "--port", "8000", "--workers", "4"]
+CMD ["fastapi", "run", "app/main.py", "--port", "8000", "--workers", "4", "--proxy-headers"]
