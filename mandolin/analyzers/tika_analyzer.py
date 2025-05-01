@@ -105,7 +105,7 @@ class Tika(FileProcessor):
                 ingestion_result.content = data.content.strip()
                 processor_result.analysis = TikaResult(
                     content_length=data.content_length,
-                    created=data.created,
+                    created=str(data.created),
                     title=data.title,
                     type=data.type,
                     language=data.language,
