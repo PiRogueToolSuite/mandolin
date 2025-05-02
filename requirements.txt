@@ -3,6 +3,7 @@ uvicorn==0.34.0
 django-environ==0.12.0
 # Tika
 tika-client==0.8.1
+markdownify==1.1.0
 python-multipart==0.0.20
 python-slugify==8.0.4
 # Yara

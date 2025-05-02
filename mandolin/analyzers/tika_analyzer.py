@@ -8,6 +8,7 @@ from fastapi import UploadFile, APIRouter, HTTPException
 from slugify import slugify
 from tika_client import TikaClient
 from tika_client.data_models import TikaResponse
+from markdownify import markdownify as md
 
 from mandolin.analyzers import Analysis, AnalyzerResult
 from ._tika.model import TikaResult
@@ -100,11 +101,15 @@ class Tika(FileProcessor):
             tmp.seek(0)
             with TikaClient(tika_url=Tika.tika_url, compress=False, timeout=5*60) as client:
                 client.add_headers(extra_headers)
-                data: TikaResponse = client.tika.as_text.from_file(
+                data: TikaResponse = client.tika.as_html.from_file(
                     Path(tmp.name),
                     magic.from_file(str(tmp.name), mime=True)
                 )
                 ingestion_result.content = data.content.strip()
+                try:
+                    ingestion_result.content = md(ingestion_result.content)
+                except Exception as e:
+                    self.logger.error(e)
                 processor_result.analysis = TikaResult(
                     content_length=data.content_length,
                     created=str(data.created),
