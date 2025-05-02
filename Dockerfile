@@ -8,20 +8,18 @@ WORKDIR /code
 
 # Install the packages needed to build Yara
 RUN apt-get update && DEBIAN_FRONTEND=noninteractive apt-get install --no-install-recommends -y \
-  automake libtool make gcc pkg-config libmagic1 wget
-
-RUN addgroup --system mandolin \
-    && adduser --system --ingroup mandolin mandolin
+  automake libtool make gcc pkg-config libmagic1 wget \
+  && addgroup --system mandolin \
+  && adduser --system --ingroup mandolin mandolin
 
 COPY --chown=mandolin:mandolin ./requirements.txt /code/requirements.txt
 
-# Install Python packages
-RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt
-
-# Purge unecessary packages
-RUN apt-get purge -y automake libtool make gcc pkg-config
-RUN apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false
-RUN rm -rf /var/lib/apt/lists/*
+# Install Python packages and purge unecessary packages
+RUN pip install --no-cache-dir --upgrade -r /code/requirements.txt \
+  && rm -rf /root/.cache/pip \
+  && apt-get purge -y automake libtool make gcc pkg-config \
+  && apt-get purge -y --auto-remove -o APT::AutoRemove::RecommendsImportant=false \
+  && rm -rf /var/lib/apt/lists/*
 
 # Copy Mandolin code
 COPY --chown=mandolin:mandolin ./app /code/app
