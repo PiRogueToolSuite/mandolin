@@ -90,6 +90,8 @@ class Thumbnail(FileProcessor):
         filtered_image = BytesIO()
         with NamedTemporaryFile("wb", suffix=self._file.filename) as tmp:
             tmp.write(self._file.file.read())
+            tmp.flush()
+            tmp.seek(0)
             with Image.open(tmp.name) as im:
                 image_ops(
                     im,

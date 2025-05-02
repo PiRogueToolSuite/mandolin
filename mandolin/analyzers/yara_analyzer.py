@@ -74,6 +74,8 @@ class Yara(FileProcessor):
 
         with NamedTemporaryFile("wb", suffix=self._file.filename) as tmp:
             tmp.write(self._file.file.read())
+            tmp.flush()
+            tmp.seek(0)
             matches = self.compiled_rules.match(tmp.name)
             yara_result = YaraResult(
                 rules=self.rules
