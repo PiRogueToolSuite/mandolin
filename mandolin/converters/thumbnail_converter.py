@@ -15,6 +15,10 @@ from mandolin import FileProcessor
 env = environ.FileAwareEnv()
 
 
+class ImageResponse(StreamingResponse):
+    media_type = "image/png"
+
+
 class ThumbnailStrategy(str, Enum):
     Pad = 'pad'
     Fit = 'fit'
@@ -56,11 +60,26 @@ class Thumbnail(FileProcessor):
     def get_router() -> APIRouter:
         router = APIRouter()
 
-        @router.post(Thumbnail.processor_url, tags=['converters'], response_class=StreamingResponse)
+        @router.post(
+            Thumbnail.processor_url,
+            tags=['converters'],
+            response_class=ImageResponse,
+            responses={
+                200: {
+                    "content": {"image/png": {
+                        "schema": {
+                            "type": "string",
+                            "format": "binary",
+                        }
+                    }},
+                    "description": "Stream the thumbnail of the given image."
+                }
+            }
+        )
         async def generate_thumbnail(
                 file: UploadFile,
                 parameters: Annotated[ThumbnailParameters, Query()]
-        ) -> StreamingResponse:
+        ) -> ImageResponse:
             try:
                 t = Thumbnail(file, parameters)
                 return t.ingest()
@@ -83,7 +102,7 @@ class Thumbnail(FileProcessor):
             )
         return False
 
-    def ingest(self):
+    def ingest(self) -> ImageResponse:
         self.fail_fast()
 
         image_ops: ImageOps = self.parameters.strategy.image_ops
@@ -92,10 +111,13 @@ class Thumbnail(FileProcessor):
             tmp.write(self._file.file.read())
             tmp.flush()
             tmp.seek(0)
+            extra_parameters = {}
+            if self.parameters.strategy == ThumbnailStrategy.Pad:
+                extra_parameters = {'color': self.parameters.color}
             with Image.open(tmp.name) as im:
                 image_ops(
                     im,
                     (self.parameters.width, self.parameters.height),
-                    color=self.parameters.color).save(filtered_image, format='PNG')
+                    **extra_parameters).save(filtered_image, format='PNG')
             filtered_image.seek(0)
-            return StreamingResponse(filtered_image, media_type="image/png")
+            return ImageResponse(filtered_image, media_type="image/png")
