@@ -115,6 +115,7 @@ class Thumbnail(FileProcessor):
             if self.parameters.strategy == ThumbnailStrategy.Pad:
                 extra_parameters = {'color': self.parameters.color}
             with Image.open(tmp.name) as im:
+                ImageOps.exif_transpose(im, in_place=True)
                 image_ops(
                     im,
                     (self.parameters.width, self.parameters.height),
