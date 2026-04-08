@@ -100,7 +100,7 @@ class Tika(FileProcessor):
             tmp.flush()
             tmp.seek(0)
             with TikaClient(tika_url=Tika.tika_url, compress=False, timeout=5*60) as client:
-                client.add_headers(extra_headers)
+                client.client.headers.update(extra_headers)
                 data: TikaResponse = client.tika.as_html.from_file(
                     Path(tmp.name),
                     magic.from_file(str(tmp.name), mime=True)

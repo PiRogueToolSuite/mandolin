@@ -33,4 +33,5 @@ services:
       retries: 3
     environment:
       - TIKA_URL=http://tika:9998/
+      - CLAMAV_URL=http://clamav:9000/
       - MAX_FILE_SIZE=250000000  # 250MB

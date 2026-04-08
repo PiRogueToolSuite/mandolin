@@ -1,7 +1,7 @@
 .idea/
 .venv/
 .hypothesis/
-openapi.json
+mandolin.egg-info/
 trash/
 /test_main.http
 __pycache__
