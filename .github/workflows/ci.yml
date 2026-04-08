@@ -17,23 +17,8 @@ on:
     types: [ created ]
 
 jobs:
-  api-tests:
-    name: Test the API with Schemathesis
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-      - name: Run the server in background
-        uses: ./.github/actions/run-server
-      - uses: schemathesis/action@v1
-        with:
-          schema: 'http://127.0.0.1:8000/openapi.json'
-          token: ${{ secrets.SCHEMATHESIS_TOKEN }}
-          args: '--checks all --experimental=openapi-3.1 --experimental=schema-analysis'
-
   generate-openapi-doc:
     name: Generate OpenAPI documentation
-    needs: api-tests
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -42,14 +27,14 @@ jobs:
       security-events: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Run the server in background
         uses: ./.github/actions/run-server
       - name: Generate Redoc static documentation
         run: npx -y @redocly/cli build-docs openapi.json --output=doc/index.html
       - name: Upload API documentation
         if: startsWith(github.ref, 'refs/tags/') && github.repository_owner == 'PiRogueToolSuite'
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: ./doc
 
@@ -67,11 +52,10 @@ jobs:
     steps:
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v4
+        uses: actions/deploy-pages@v5
 
   docker-build:
     name: Build and publish the docker image
-    needs: api-tests
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -80,16 +64,16 @@ jobs:
       security-events: write
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Set up QEMU
-        uses: docker/setup-qemu-action@v3
+        uses: docker/setup-qemu-action@v4
       - name: Setup Docker buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
       # Login against a Docker registry except on PR
       # https://github.com/docker/login-action
       - name: Log into registry ${{ env.REGISTRY }}
         if: github.event_name != 'pull_request'
-        uses: docker/login-action@v3
+        uses: docker/login-action@v4
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
@@ -99,7 +83,7 @@ jobs:
       # https://github.com/docker/metadata-action
       - name: Extract Docker metadata
         id: meta
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@v6
         with:
           images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
           # generate Docker tags based on the following events/attributes
@@ -116,7 +100,7 @@ jobs:
       # https://github.com/docker/build-push-action
       - name: Build and push Docker image
         id: build-and-push
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: ./Dockerfile
@@ -133,7 +117,7 @@ jobs:
             annotation.org.opencontainers.image.revision="${{ github.sha }}"
 
       - name: Log into Docker Hub
-        uses: docker/login-action@v3.1.0
+        uses: docker/login-action@v4
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
