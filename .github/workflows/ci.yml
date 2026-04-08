@@ -56,6 +56,7 @@ jobs:
 
   docker-build:
     name: Build and publish the docker image
+    needs: generate-openapi-doc
     runs-on: ubuntu-latest
     permissions:
       contents: read
