@@ -28,8 +28,6 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
-      - name: Run the server in background
-        uses: ./.github/actions/run-server
       - name: Generate Redoc static documentation
         run: npx -y @redocly/cli build-docs openapi.json --output=doc/index.html
       - name: Upload API documentation
