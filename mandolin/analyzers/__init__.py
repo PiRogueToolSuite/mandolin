@@ -26,4 +26,6 @@ class AnalyzerResult(BaseModel, Generic[T]):
 class Analysis(BaseModel, Generic[T]):
     success: bool = False
     content: str | None = None
+    error: str | None = None
+    error_short: str | None = None
     processors: dict[str, AnalyzerResult[T]] | None = None

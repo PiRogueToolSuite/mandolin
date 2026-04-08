@@ -1,11 +1,11 @@
 from fastapi import FastAPI
 from fastapi.openapi.utils import get_openapi
-
+from mandolin.analyzers.clamav_analyzer import ClamAV
 from mandolin.analyzers.tika_analyzer import Tika
 from mandolin.analyzers.yara_analyzer import Yara
 from mandolin.converters.thumbnail_converter import Thumbnail
 
-API_VERSION = "1.0.2"
+API_VERSION = "1.0.3"
 
 app = FastAPI(
     title="Mandolin",
@@ -15,6 +15,7 @@ app = FastAPI(
 )
 
 app.include_router(Tika.get_router())
+app.include_router(ClamAV.get_router())
 app.include_router(Yara.get_router())
 app.include_router(Thumbnail.get_router())
 

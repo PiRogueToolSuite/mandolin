@@ -3,17 +3,16 @@ description: 'Reusable action to run the FastAPI server in background on port 80
 runs:
   using: composite
   steps:
-  - name: Set up Python 3.13
-    uses: actions/setup-python@v5
+  - name: Install uv
+    uses: astral-sh/setup-uv@v5
     with:
-      python-version: '3.13'
-      cache: 'pip'
+      enable-cache: true
   - name: Install Python dependencies
     shell: bash
-    run: pip install -r dev-requirements.txt
+    run: uv sync --all-extras --dev
   - name: Run server in background
     shell: bash
-    run: fastapi run app/main.py --port 8000 &
+    run: uv run fastapi run app/main.py --port 8000 &
   - name: Generate OpenAPI document
     shell: bash
     run: curl -f http://localhost:8000/openapi.json -o openapi.json

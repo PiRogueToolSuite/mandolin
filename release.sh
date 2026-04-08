@@ -43,7 +43,7 @@ then
 fi
 
 rm -f openapi.json
-fastapi run app/main.py --port 8000 &
+uv run fastapi run app/main.py --port 8000 &
 sleep 2
 curl -f http://localhost:8000/openapi.json -o openapi.json
 ps -ef | grep fastapi | grep -v grep | awk '{print $2}' | xargs kill -9

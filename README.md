@@ -17,4 +17,5 @@ License: GPLv3
 ## Supported operations
 * Extract content and metadata with Tika
 * Apply Yara rules 
+* Scan files with ClamAV 
 * Generate thumbnails of images
