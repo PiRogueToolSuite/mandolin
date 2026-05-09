@@ -1,14 +1,14 @@
 import traceback
 from abc import ABCMeta, abstractmethod
 
-from fastapi import UploadFile, APIRouter
+from fastapi import APIRouter
 
-from mandolin.analyzers import Analysis, AnalyzerResult
+from mandolin.analyzers import Analysis, AnalyzerResult, CompatibleUploadFile
 
 
 class FileProcessor(metaclass=ABCMeta):
-    def __init__(self, file: UploadFile, **kwargs):
-        self._file: UploadFile = file
+    def __init__(self, file: CompatibleUploadFile, **kwargs):
+        self._file: CompatibleUploadFile = file
         self._filesize: int = file.size
         for key, value in kwargs.items():
             setattr(self, key, value)

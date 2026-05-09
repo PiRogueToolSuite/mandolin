@@ -4,13 +4,13 @@ from tempfile import NamedTemporaryFile
 
 import environ
 import magic
-from fastapi import UploadFile, APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException
+from markdownify import markdownify as md
 from slugify import slugify
 from tika_client import TikaClient
 from tika_client.data_models import TikaResponse
-from markdownify import markdownify as md
 
-from mandolin.analyzers import Analysis, AnalyzerResult
+from mandolin.analyzers import Analysis, AnalyzerResult, CompatibleUploadFile
 from ._tika.model import TikaResult
 from .. import FileProcessor
 
@@ -25,7 +25,7 @@ class Tika(FileProcessor):
     max_file_size = env.int('MAX_FILE_SIZE', default=250_000_000)
     logger = logging.getLogger(processor_name)
 
-    def __init__(self, file: UploadFile, **kwargs):
+    def __init__(self, file: CompatibleUploadFile, **kwargs):
         super().__init__(file, **kwargs)
 
     @staticmethod
@@ -33,7 +33,7 @@ class Tika(FileProcessor):
         router = APIRouter()
 
         @router.post(Tika.processor_url, tags=['analyzers'])
-        async def analyze_with_tika(file: UploadFile) -> Analysis[TikaResult]:
+        async def analyze_with_tika(file: CompatibleUploadFile) -> Analysis[TikaResult]:
             try:
                 t = Tika(file)
                 return t.ingest()
@@ -99,7 +99,7 @@ class Tika(FileProcessor):
             tmp.write(self._file.file.read())
             tmp.flush()
             tmp.seek(0)
-            with TikaClient(tika_url=Tika.tika_url, compress=False, timeout=5*60) as client:
+            with TikaClient(tika_url=Tika.tika_url, compress=False, timeout=5 * 60) as client:
                 client.client.headers.update(extra_headers)
                 data: TikaResponse = client.tika.as_html.from_file(
                     Path(tmp.name),

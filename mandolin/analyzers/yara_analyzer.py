@@ -4,9 +4,9 @@ from typing import Annotated
 
 import environ
 import yara
-from fastapi import UploadFile, APIRouter, Form, HTTPException
+from fastapi import APIRouter, Form, HTTPException
 
-from mandolin.analyzers import Analysis, ProcessorType, AnalyzerResult
+from mandolin.analyzers import Analysis, ProcessorType, AnalyzerResult, CompatibleUploadFile
 from ._yara.model import YaraResult
 from .. import FileProcessor
 
@@ -21,7 +21,7 @@ class Yara(FileProcessor):
     max_file_size = env.int('MAX_FILE_SIZE', default=250_000_000)
     logger = logging.getLogger(processor_name)
 
-    def __init__(self, file: UploadFile, **kwargs):
+    def __init__(self, file: CompatibleUploadFile, **kwargs):
         super().__init__(file, **kwargs)
         self.compiled_rules = None
 
@@ -31,7 +31,7 @@ class Yara(FileProcessor):
 
         @router.post(Yara.processor_url, tags=['analyzers'])
         async def analyze_with_yara(
-                file: UploadFile,
+                file: CompatibleUploadFile,
                 rules: Annotated[str, Form()],
         ) -> Analysis[YaraResult]:
             y = Yara(file, rules=rules)

@@ -1,12 +1,10 @@
 import logging
-from statistics import mode
-from tempfile import NamedTemporaryFile
 
 import environ
 import httpx
-from fastapi import UploadFile, APIRouter, HTTPException
-from mandolin.analyzers import Analysis, AnalyzerResult
+from fastapi import APIRouter, HTTPException
 
+from mandolin.analyzers import Analysis, AnalyzerResult, CompatibleUploadFile
 from ._clamav.model import ClamAVResult
 from .. import FileProcessor
 
@@ -21,7 +19,7 @@ class ClamAV(FileProcessor):
     max_file_size = env.int('MAX_FILE_SIZE', default=250_000_000)
     logger = logging.getLogger(processor_name)
 
-    def __init__(self, file: UploadFile, **kwargs):
+    def __init__(self, file: CompatibleUploadFile, **kwargs):
         super().__init__(file, **kwargs)
 
     @staticmethod
@@ -29,7 +27,7 @@ class ClamAV(FileProcessor):
         router = APIRouter()
 
         @router.post(ClamAV.processor_url, tags=['analyzers'])
-        async def analyze_with_clamav(file: UploadFile) -> Analysis[ClamAVResult]:
+        async def analyze_with_clamav(file: CompatibleUploadFile) -> Analysis[ClamAVResult]:
             try:
                 t = ClamAV(file)
                 return t.ingest()
@@ -76,7 +74,10 @@ class ClamAV(FileProcessor):
         with httpx.Client() as client:
             r = client.post(f"{ClamAV.clamav_url}/v2/scan", files=files, timeout=30)
             if r.status_code not in [200, 406]:
-                raise Exception(r.text)
+                processor_result.success = False
+                processor_result.error = r.text
+                processor_result.error_short = r.text
+                ClamAV.logger.error(r.text)
             else:
                 data = r.json()[0]
                 processor_result.success = True

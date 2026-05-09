@@ -7,10 +7,9 @@ from typing import Annotated
 import environ
 from PIL import Image, ImageOps
 from fastapi import APIRouter, UploadFile, Query, HTTPException
+from mandolin import FileProcessor, CompatibleUploadFile
 from pydantic import BaseModel, PositiveInt
 from starlette.responses import StreamingResponse
-
-from mandolin import FileProcessor
 
 env = environ.FileAwareEnv()
 
@@ -52,7 +51,7 @@ class Thumbnail(FileProcessor):
     max_file_size = env.int('MAX_FILE_SIZE', default=250_000_000)
     logger = logging.getLogger(processor_name)
 
-    def __init__(self, file: UploadFile, parameters: ThumbnailParameters, **kwargs):
+    def __init__(self, file: CompatibleUploadFile, parameters: ThumbnailParameters, **kwargs):
         super().__init__(file, **kwargs)
         self.parameters = parameters
 

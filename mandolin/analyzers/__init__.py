@@ -1,6 +1,7 @@
 from enum import Enum
-from typing import Generic, TypeVar
+from typing import Generic, TypeVar, Any, Annotated
 
+from fastapi import UploadFile, File
 from pydantic import BaseModel
 
 
@@ -29,3 +30,7 @@ class Analysis(BaseModel, Generic[T]):
     error: str | None = None
     error_short: str | None = None
     processors: dict[str, AnalyzerResult[T]] | None = None
+
+
+class CompatibleUploadFile(UploadFile):
+    pass
